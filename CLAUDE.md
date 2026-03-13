@@ -9,6 +9,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 A daily health management web app providing workout routine tracking, diet logging, and AI-generated feedback.
 
+> **Read first:** See `docs/planning.md` for the full product spec, DB schema, route structure, and component breakdown before making changes.
+
 ## Tech Stack
 
 - **Framework**: Next.js 16 (App Router, `src/` directory)
@@ -77,9 +79,9 @@ Use the correct client for each rendering context:
 |------|---------|
 | `src/lib/supabase/client.ts` | Client Components (`'use client'`) |
 | `src/lib/supabase/server.ts` | Server Components, Route Handlers, Server Actions |
-| `src/lib/supabase/middleware.ts` | `src/middleware.ts` only |
+| `src/lib/supabase/middleware.ts` | `src/proxy.ts` only |
 
-Do not remove `src/middleware.ts` — it refreshes Supabase sessions on every request.
+Do not remove `src/proxy.ts` — it refreshes Supabase sessions on every request.
 
 ## Conventions
 
@@ -87,3 +89,9 @@ Do not remove `src/middleware.ts` — it refreshes Supabase sessions on every re
 - API Routes: `src/app/api/[feature]/route.ts`
 - Supabase queries are extracted as functions under `src/lib/supabase/`
 - All AI logic must run server-side (`api/` routes only) — never expose `ANTHROPIC_API_KEY` to the client
+
+## Theme
+- Dark/light mode support
+- Default: follows system preference (`prefers-color-scheme`)
+- CSS custom properties in `globals.css` handle dark mode (no `next-themes` — pure CSS approach)
+- All components should include `dark:` Tailwind variants

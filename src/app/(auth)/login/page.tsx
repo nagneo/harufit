@@ -1,16 +1,31 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
+import { createClient } from '@/lib/supabase/client'
 
 export default function LoginPage() {
+  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    setLoading(true)
+    setError(null)
+    const supabase = createClient()
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    if (error) {
+      setError('이메일 또는 비밀번호가 올바르지 않아요')
+      setLoading(false)
+      return
+    }
+    router.push('/routine')
   }
 
   return (
@@ -47,8 +62,13 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="current-password"
           />
+          {error && (
+            <p className="text-[13px] text-red-500 text-center">{error}</p>
+          )}
           <div className="pt-1">
-            <Button type="submit">로그인</Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? '로그인 중…' : '로그인'}
+            </Button>
           </div>
         </form>
       </div>
